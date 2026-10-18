@@ -1,0 +1,421 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kuis Regulasi Diri PNF</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap">
+<style>
+/* Layout: kotak 6,4 x 5,6 inci di slide 13 (rasio 1,143; iframe disarankan 849 x 743 px). Kiri panel dashboard biru tua (skor, langkah soal), kanan area soal dengan bilah progres di atas dan tombol di bawah. */
+:root{
+  --bg:#e4f2f0; --surface:#ffffff; --fg:#0a2540; --muted:#52748a; --line:#c9dde0; --sel:#e8f6f4;
+  --accent:#13808a; --accent2:#2ec4b6; --accentfg:#ffffff;
+  --side:#0a2540; --sidefg:#ffffff; --sidemut:#a8c4d4; --sideline:#27496a;
+  --ok:#1f8a4c; --oks:#def3e6; --bad:#c2334d; --bads:#fbe3e7;
+  --font:"Figtree","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#061a2e; --surface:#0f2f4d; --fg:#eaf4f6; --muted:#9bb8c8; --line:#27485f; --sel:#16405f;
+  --accent:#2ec4b6; --accentfg:#0a2540; --side:#04121f; --sideline:#1d3a56;
+  --ok:#5fd18a; --oks:#123d2a; --bad:#ff8497; --bads:#4a1d28; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#061a2e; --surface:#0f2f4d; --fg:#eaf4f6; --muted:#9bb8c8; --line:#27485f; --sel:#16405f;
+  --accent:#2ec4b6; --accentfg:#0a2540; --side:#04121f; --sideline:#1d3a56;
+  --ok:#5fd18a; --oks:#123d2a; --bad:#ff8497; --bads:#4a1d28; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;line-height:1.45;box-sizing:border-box;padding:10px 16px}
+button{font:inherit;color:inherit}
+.frame{position:relative;height:100%;max-width:920px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);border-radius:18px;overflow:hidden;background:var(--surface);box-shadow:0 6px 24px rgba(10,37,64,.18)}
+/* sidebar */
+.side{background:var(--side);color:var(--sidefg);padding:18px 16px;display:flex;flex-direction:column;gap:14px;min-height:0;overflow-y:auto}
+.brand small{display:block;font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2)}
+.brand b{display:block;font-size:1.15rem;line-height:1.2;font-weight:800;margin-top:2px}
+.ringwrap{position:relative;width:132px;height:132px;margin:0 auto}
+.ringwrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ringwrap circle{fill:none;stroke-width:11}
+.ring-bg{stroke:var(--sideline)}
+.ring-fg{stroke:var(--accent2);stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.ring-tick{stroke:#fff;stroke-width:3!important}
+.ringtxt{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}
+.ringtxt strong{font-size:2.1rem;font-weight:800;font-variant-numeric:tabular-nums}
+.ringtxt span{font-size:.68rem;color:var(--sidemut);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:var(--sideline);border-radius:10px;padding:8px 10px}
+.stat b{display:block;font-size:1.25rem;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.stat span{font-size:.7rem;color:var(--sidemut)}
+.steps{display:flex;gap:6px;justify-content:space-between}
+.chip{flex:1;aspect-ratio:1;max-width:36px;border-radius:50%;border:2px solid var(--sideline);background:transparent;color:var(--sidemut);font-weight:800;font-size:.85rem;cursor:pointer;display:grid;place-items:center;transition:background .2s,border-color .2s}
+.chip:disabled{cursor:default;opacity:.5}
+.chip.cur{border-color:var(--accent2);color:#fff}
+.chip.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.chip.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.chip.cur.ok,.chip.cur.bad{box-shadow:0 0 0 3px var(--side),0 0 0 5px var(--accent2)}
+.passnote{margin-top:auto;font-size:.75rem;color:var(--sidemut)}
+.passnote b{color:#fff}
+/* main */
+.main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.top{padding:14px 22px 10px;display:flex;flex-direction:column;gap:8px}
+.toprow{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.8rem;color:var(--muted);font-weight:600}
+.toprow b{color:var(--fg);font-size:.95rem}
+.pbar{height:10px;border-radius:5px;background:var(--line);overflow:hidden}
+.pbar i{display:block;height:100%;width:0;border-radius:5px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .4s ease}
+.body{flex:1;min-height:0;overflow-y:auto;padding:6px 22px 12px;display:flex;flex-direction:column;gap:12px}
+.body>*{flex-shrink:0}
+.kc{display:none}
+.kind{align-self:flex-start;font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);background:var(--sel);border-radius:999px;padding:3px 10px}
+.q{font-size:1.08rem;font-weight:600;line-height:1.4;margin:0;max-width:62ch}
+.opts{display:flex;flex-direction:column;gap:8px}
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;box-sizing:border-box;background:var(--surface);border:2px solid var(--line);border-radius:12px;padding:9px 12px;cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
+.opt:hover:not(:disabled){border-color:var(--accent);transform:translateX(2px)}
+.opt:disabled{cursor:default}
+.opt .mk{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.75rem;font-weight:800;color:var(--muted);margin-top:1px}
+.multi .opt .mk{border-radius:6px}
+.opt.sel{border-color:var(--accent);background:var(--sel)}
+.opt.sel .mk{background:var(--accent);border-color:var(--accent);color:var(--accentfg)}
+.opt.ok{border-color:var(--ok);background:var(--oks)}
+.opt.ok .mk{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.opt.bad{border-color:var(--bad);background:var(--bads)}
+.opt.bad .mk{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.opt.miss{border-style:dashed;border-color:var(--ok)}
+.opt:focus-visible,.btn:focus-visible,.chip:focus-visible,.slot:focus-visible,.card:focus-visible{outline:3px solid var(--accent2);outline-offset:2px}
+.cap{font-size:.78rem;color:var(--muted)}
+/* match */
+.pool{display:flex;flex-direction:column;gap:6px;min-height:36px;padding:8px;border:2px dashed var(--line);border-radius:12px}
+.card{background:var(--surface);border:2px solid var(--accent);border-radius:10px;padding:7px 10px;font-size:.9rem;cursor:grab;text-align:left;width:100%;box-sizing:border-box}
+.card.pick{background:var(--accent);color:var(--accentfg)}
+.slots{display:flex;flex-direction:column;gap:6px}
+.slotrow{display:grid;grid-template-columns:112px minmax(0,1fr);gap:8px;align-items:stretch}
+.stage{display:flex;align-items:center;justify-content:center;border-radius:10px;background:var(--side);color:#fff;font-weight:800;font-size:.85rem;padding:6px;text-align:center}
+.slot{min-height:44px;border:2px dashed var(--line);border-radius:10px;padding:4px;display:flex;align-items:center;background:transparent;cursor:pointer;text-align:left;width:100%;box-sizing:border-box}
+.slot.over,.slot.ready{border-color:var(--accent);background:var(--sel)}
+.slot .card{cursor:pointer}
+.slot.ok{border:2px solid var(--ok);background:var(--oks)}
+.slot.bad{border:2px solid var(--bad);background:var(--bads)}
+.slot .card{border-color:transparent;background:transparent;padding:4px 6px}
+.should{font-size:.78rem;color:var(--bad);margin:2px 0 0 120px}
+/* feedback */
+.verdict{display:flex;align-items:center;gap:10px;border-radius:12px;padding:9px 12px;font-weight:800}
+.verdict.ok{background:var(--oks);color:var(--ok)}
+.verdict.bad{background:var(--bads);color:var(--bad)}
+.verdict span{font-weight:600;color:var(--fg);font-size:.88rem}
+.expl{border-left:5px solid var(--accent2);background:var(--sel);border-radius:4px 12px 12px 4px;padding:10px 14px;font-size:.92rem}
+.expl b{display:block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.expl em{display:block;font-style:normal;color:var(--muted);font-size:.8rem;margin-top:6px}
+textarea{width:100%;box-sizing:border-box;border:2px solid var(--line);border-radius:10px;background:var(--surface);color:var(--fg);font:inherit;padding:8px 10px;resize:none;height:56px}
+textarea:focus{outline:none;border-color:var(--accent)}
+/* actions */
+.actions{display:flex;gap:8px;flex-wrap:wrap;padding:10px 22px 14px;border-top:1px solid var(--line)}
+.btn{border:2px solid var(--accent);background:transparent;color:var(--accent);font-weight:800;border-radius:999px;padding:8px 18px;cursor:pointer;transition:transform .15s,background .15s}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn.pri{background:var(--accent);color:var(--accentfg)}
+.btn.ghost{border-color:var(--line);color:var(--muted);margin-left:auto}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+/* result */
+.res{display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.badge{font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:4px 12px}
+.badge.ok{background:var(--oks);color:var(--ok)}
+.badge.bad{background:var(--bads);color:var(--bad)}
+.big{font-size:2.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.big small{font-size:1rem;color:var(--muted);font-weight:600}
+.msg{font-size:1.05rem;max-width:52ch;margin:0}
+.rlist{display:flex;flex-direction:column;gap:6px;width:100%}
+.rrow{display:flex;gap:10px;align-items:center;border:2px solid var(--line);border-radius:10px;padding:7px 12px;background:var(--surface);cursor:pointer;text-align:left;width:100%;box-sizing:border-box}
+.rrow:hover{border-color:var(--accent)}
+.rrow i{font-style:normal;flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--surface);font-weight:800;font-size:.8rem}
+.rrow.ok i{background:var(--ok)} .rrow.bad i{background:var(--bad)}
+.rrow span{flex:1;min-width:0;font-size:.9rem}
+.rrow b{font-variant-numeric:tabular-nums;font-size:.85rem;color:var(--muted)}
+.conf{position:absolute;top:-12px;width:9px;height:14px;border-radius:2px;animation:fall 2.4s ease-in forwards;pointer-events:none;z-index:5}
+@keyframes fall{to{transform:translateY(680px) rotate(540deg);opacity:.2}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.conf{display:none}}
+/* Mode ringkas: dipakai bila iframe lebih kecil dari 700 px lebar atau 480 px tinggi */
+@media (max-width:700px),(max-height:480px){
+  body{padding:6px 16px;font-size:13.5px}
+  .frame{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);border-radius:14px}
+  .side{flex-direction:row;align-items:center;gap:10px;padding:6px 12px;overflow:visible}
+  .brand,.stats,.passnote{display:none}
+  .ringwrap{width:42px;height:42px;margin:0;flex:none}
+  .ring-fg,.ring-bg,.ring-tick{stroke-width:15px}
+  .ringtxt strong{font-size:.85rem} .ringtxt span{display:none}
+  .steps{flex:1;gap:4px;justify-content:flex-end}
+  .chip{max-width:30px;font-size:.75rem;border-width:2px}
+  .top{padding:8px 14px 4px;flex-direction:row;align-items:center;gap:10px}
+  .toprow{flex:none;gap:0} .toprow b{font-size:.85rem} #plabel{display:none}
+  .pbar{flex:1;height:8px}
+  .body{padding:4px 14px 8px;gap:8px}
+  .kind{display:none} .kc{display:inline;font-weight:600;color:var(--muted)}
+  .q{font-size:.95rem;line-height:1.35}
+  .opts{gap:6px}
+  .opt{padding:6px 10px;gap:8px;border-radius:10px}
+  .opt .mk{width:20px;height:20px;font-size:.68rem}
+  .cap{font-size:.72rem}
+  .pool{padding:6px;gap:5px}
+  .card{padding:5px 8px;font-size:.82rem}
+  .slotrow{grid-template-columns:90px minmax(0,1fr);gap:6px}
+  .stage{font-size:.7rem;padding:2px;overflow-wrap:anywhere}
+  .slot{min-height:38px}
+  .should{margin-left:96px;font-size:.72rem}
+  .verdict{padding:6px 10px;font-size:.9rem} .verdict span{font-size:.8rem}
+  .expl{padding:8px 12px;font-size:.84rem}
+  textarea{height:44px}
+  .actions{padding:8px 14px;gap:6px}
+  .btn{padding:6px 13px;font-size:.85rem}
+  .big{font-size:2rem} .msg{font-size:.95rem} .res{gap:8px}
+  .rrow{padding:5px 10px} .rrow span{font-size:.82rem}
+}
+</style>
+
+<div class="frame" id="frame">
+  <aside class="side" aria-label="Dasbor kuis">
+    <div class="brand"><small>Evaluasi Interaktif</small><b>Cek Pemahaman Anda</b></div>
+    <div class="ringwrap" role="img" id="ringlabel">
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+        <circle class="ring-fg" id="ring" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+        <circle class="ring-tick" cx="60" cy="60" r="50" stroke-dasharray="3 311.16" stroke-dashoffset="-251.3"></circle>
+      </svg>
+      <div class="ringtxt"><strong id="score">0</strong><span>Skor</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sOk">0</b><span>Benar</span></div>
+      <div class="stat"><b id="sBad">0</b><span>Belum tepat</span></div>
+    </div>
+    <div class="steps" id="steps"></div>
+    <div class="passnote">Garis putih pada cincin = batas lulus <b>80</b>. Tiap soal bernilai 20 poin.</div>
+  </aside>
+  <section class="main">
+    <div class="top">
+      <div class="toprow"><b id="qlabel">Soal 1 dari 5</b><span id="plabel">0 soal dicek</span></div>
+      <div class="pbar" role="progressbar" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="pbar"><i id="pfill"></i></div>
+    </div>
+    <div class="body" id="body"></div>
+    <div class="actions" id="actions"></div>
+  </section>
+</div>
+
+<script>
+var Q=[
+ {kind:"Pilihan ganda",type:"single",theory:"Pemantauan (Baumeister)",
+  text:"Pak Rudi menyadari suaranya mulai meninggi ketika beberapa murid datang terlambat. Ia berhenti sejenak, menarik napas, lalu berbicara dengan nada lebih tenang. Komponen regulasi diri yang paling tampak pada tindakan Pak Rudi adalah ...",
+  opts:["Standar","Motivasi","Pemantauan","Energi Mental"],key:[2],
+  exp:"Pak Rudi menyadari kondisi emosinya saat itu juga, lalu mengoreksi tindakannya. Itulah pemantauan diri. Standar adalah patokan yang dipegang, Motivasi adalah dorongan menjalankannya, dan Energi Mental adalah tenaga yang menopang semuanya."},
+ {kind:"Pilihan ganda",type:"single",theory:"Kelelahan Mental",
+  text:"Pernyataan yang paling tepat tentang kelelahan mental pada pendidik PNF adalah ...",
+  opts:["Tanda kurang semangat yang cukup diatasi dengan menambah target kerja",
+        "Kondisi ketika kapasitas psikologis terkuras akibat intensitas interaksi dan tuntutan, sehingga kontrol diri menurun",
+        "Kondisi permanen yang tidak dapat dipulihkan, sehingga pendidik harus berhenti mengajar",
+        "Kondisi yang hanya dialami pendidik yang baru mulai mengajar dan belum berpengalaman"],key:[1],
+  exp:"Kelelahan mental adalah terkurasnya kapasitas psikologis, dapat dialami siapa saja, dan dapat dipulihkan melalui jeda, penyederhanaan target, dan dukungan sesama pendidik."},
+ {kind:"Pilih 3 jawaban",type:"multi",theory:"Motivasi dan Pemantauan Diri (Baumeister)",
+  text:"Pak Darto mengajar kelompok orang dewasa yang datang sepulang kerja. Di tengah sesi, banyak yang tampak lelah dan kehilangan fokus. Pilih TIGA langkah yang paling tepat dengan pendekatan humor dan empati.",
+  opts:["Mengakui kelelahan mereka dengan candaan ringan, lalu mengajak “mengisi baterai” selama dua menit",
+        "Menegur keras yang tidak fokus agar menjadi jera",
+        "Mengajak peregangan singkat, lalu mengaitkan materi dengan pengalaman kerja mereka",
+        "Mempercepat materi agar selesai tepat waktu",
+        "Menanyakan dengan empati apa yang membuat sulit fokus, lalu menyesuaikan tempo",
+        "Membiarkan saja karena itu urusan pribadi murid"],key:[0,2,4],
+  exp:"Humor yang ramah, jeda singkat, dan pertanyaan empatik menjaga rasa aman sekaligus memulihkan fokus. Menegur keras, mempercepat materi, dan mengabaikan justru menambah jarak."},
+ {kind:"Studi kasus",type:"single",theory:"Siklus SRL Zimmerman dan pemanfaatan potensi lingkungan",
+  text:"Bagaimana cara terbaik membantu murid membuat jurnal belajar mandiri dengan memanfaatkan potensi di sekitar, misalnya pasar atau bengkel?",
+  opts:["Memberi format jurnal baku dan meminta murid mengisinya di rumah tanpa pendampingan",
+        "Mengajak menentukan target kecil dari kegiatan di pasar atau bengkel (perencanaan), mencatat yang dilakukan dan dipelajari saat kegiatan (pemantauan), lalu menulis yang berhasil dan akan diubah (refleksi)",
+        "Meminta murid menyalin ringkasan materi dari buku, lalu menghafalkannya sebelum pertemuan berikutnya",
+        "Menilai jurnal dengan angka tanpa berdiskusi dengan murid tentang isinya"],key:[1],
+  exp:"Jawaban yang benar memuat ketiga tahap siklus Zimmerman dan memakai pengalaman nyata murid. Jawaban lain tidak memberi pendampingan, tidak kontekstual, atau tidak membangun refleksi."},
+ {kind:"Menjodohkan",type:"match",theory:"Manajemen Energi Mental dan siklus SRL Zimmerman",
+  text:"Jodohkan strategi pemulihan energi dengan tahap siklus yang paling relevan. Seret kartu ke kotak tahap, atau ketuk kartu lalu ketuk kotak tahapnya.",
+  stages:["Perencanaan","Pemantauan","Refleksi"],
+  opts:["Menyusun jadwal sesi dan jeda istirahat sebelum mengajar",
+        "Menyadari energi menurun di tengah sesi, lalu mengganti metode atau menjeda",
+        "Mencatat strategi pemulihan yang paling berhasil, lalu merevisinya untuk minggu depan"],
+  exp:"Perencanaan terjadi sebelum kegiatan, pemantauan saat kegiatan, dan refleksi sesudahnya."}
+];
+var PASS="Selamat, Anda memahami dasar regulasi diri. Lanjutkan dengan menerapkannya di kelas Anda.";
+var FAIL="Terus semangat. Baca kembali Hal. 10, lalu coba lagi.";
+var $=function(id){return document.getElementById(id)};
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function range(n){var r=[];for(var i=0;i<n;i++)r.push(i);return r}
+var S, pick=null;
+
+function fresh(){
+  S={cur:0,view:"q",done:false,furthest:0,
+     order:Q.map(function(q){return shuffle(range(q.opts.length))}),
+     ans:Q.map(function(q){return q.type==="match"?[-1,-1,-1]:[]}),
+     chk:Q.map(function(){return false}),ok:Q.map(function(){return false}),expl:Q.map(function(){return false})};
+  // pastikan kartu menjodohkan tidak langsung berurutan benar
+  while(S.order[4].every(function(v,i){return v===i}))S.order[4]=shuffle(range(3));
+  pick=null;
+}
+function judge(i){
+  var q=Q[i],a=S.ans[i];
+  if(q.type==="single")return a.length===1&&a[0]===q.key[0];
+  if(q.type==="multi")return a.length===3&&a.slice().sort().join()===q.key.join();
+  return a.every(function(v,k){return v===k});
+}
+function ready(i){
+  var q=Q[i],a=S.ans[i];
+  if(q.type==="single")return a.length===1;
+  if(q.type==="multi")return a.length===3;
+  return a.every(function(v){return v>=0});
+}
+function nOk(){return S.ok.filter(Boolean).length}
+function nChk(){return S.chk.filter(Boolean).length}
+
+function side(){
+  var sc=nOk()*20;
+  $("score").textContent=sc;
+  $("ring").style.strokeDashoffset=314.16*(1-sc/100);
+  $("ringlabel").setAttribute("aria-label","Skor "+sc+" dari 100, batas lulus 80");
+  $("sOk").textContent=nOk(); $("sBad").textContent=nChk()-nOk();
+  var st=$("steps"); st.innerHTML="";
+  Q.forEach(function(q,i){
+    var b=el("button","chip"+(S.chk[i]?(S.ok[i]?" ok":" bad"):"")+(S.view==="q"&&S.cur===i?" cur":""),S.chk[i]?(S.ok[i]?"✓":"✗"):String(i+1));
+    b.type="button"; b.setAttribute("aria-label","Soal "+(i+1)+(S.chk[i]?(S.ok[i]?", benar":", belum tepat"):""));
+    b.disabled=i>S.furthest;
+    b.addEventListener("click",function(){S.view="q";S.cur=i;render()});
+    st.appendChild(b);
+  });
+  var n=nChk();
+  $("pfill").style.width=(n/Q.length*100)+"%";
+  $("pbar").setAttribute("aria-valuenow",n);
+  $("plabel").textContent=n+" dari "+Q.length+" soal dicek";
+  var ql=$("qlabel"); ql.textContent=S.view==="res"?"Hasil akhir":"Soal "+(S.cur+1)+" dari "+Q.length;
+  if(S.view!=="res"){var kc=el("span","kc"," \u00B7 "+Q[S.cur].kind);ql.appendChild(kc)}
+}
+
+function render(){
+  side(); var body=$("body"),act=$("actions"); body.innerHTML=""; act.innerHTML="";
+  if(S.view==="res")renderRes(body,act); else renderQ(body,act);
+  body.scrollTop=0;
+  var t=body.querySelector(".expl")||body.querySelector(".verdict");
+  if(t)setTimeout(function(){t.scrollIntoView({block:"nearest"})},0);
+}
+
+function btn(label,cls,fn,dis){var b=el("button","btn "+(cls||""),label);b.type="button";if(dis)b.disabled=true;b.addEventListener("click",fn);return b}
+var resetArm=false,resetT=null;
+function resetBtn(){
+  var b=btn(resetArm?"Yakin ulangi? Ketuk lagi":"Ulangi",resetArm?"pri":"ghost",function(){
+    if(!resetArm){resetArm=true;clearTimeout(resetT);resetT=setTimeout(function(){resetArm=false;render()},3000);render();return}
+    clearTimeout(resetT);resetArm=false;fresh();render();
+  });
+  if(S.view==="res"||nChk()===0)b.textContent="Ulangi";
+  return b;
+}
+
+function renderQ(body,act){
+  var i=S.cur,q=Q[i],chk=S.chk[i];
+  body.appendChild(el("span","kind",q.kind));
+  body.appendChild(el("p","q",q.text));
+  if(q.type==="match")matchUI(body,i); else optsUI(body,i);
+  if(chk){
+    var ok=S.ok[i],v=el("div","verdict "+(ok?"ok":"bad"),(ok?"✓ Benar":"✗ Belum tepat"));
+    v.appendChild(el("span",null,ok?"+20 poin":"+0 poin. Buka pembahasan untuk melihat jawaban yang tepat."));
+    body.appendChild(v);
+    if(S.expl[i]){
+      var e=el("div","expl"); e.appendChild(el("b",null,"Pembahasan")); e.appendChild(el("span",null,q.exp));
+      e.appendChild(el("em",null,"Kaitan teori: "+q.theory)); body.appendChild(e);
+    }
+    if(q.type==="multi"){
+      body.appendChild(el("div","cap","Pengayaan (tidak dinilai): tuliskan satu langkah versi Anda."));
+      var t=document.createElement("textarea"); t.id="enrich"; t.setAttribute("aria-label","Satu langkah versi Anda"); t.placeholder="Satu langkah versi Anda..."; body.appendChild(t);
+    }
+    act.appendChild(btn(S.expl[i]?"Sembunyikan Pembahasan":"Lihat Pembahasan","",function(){S.expl[i]=!S.expl[i];render()}));
+    if(S.done) act.appendChild(btn("Kembali ke Hasil","pri",function(){S.view="res";render()}));
+    else act.appendChild(btn(i===Q.length-1?"Lihat Hasil":"Soal Berikutnya","pri",function(){
+      if(i===Q.length-1){S.done=true;S.view="res"}else{S.cur=i+1;S.furthest=Math.max(S.furthest,S.cur)}
+      render(); if(S.view==="res"&&nOk()*20>=80)confetti();
+    }));
+  }else{
+    act.appendChild(btn("Cek Jawaban","pri",function(){
+      S.chk[i]=true;S.ok[i]=judge(i);S.expl[i]=false;render();
+    },!ready(i)));
+  }
+  act.appendChild(resetBtn());
+}
+
+function optsUI(body,i){
+  var q=Q[i],multi=q.type==="multi",chk=S.chk[i],box=el("div","opts"+(multi?" multi":""));
+  box.setAttribute("role",multi?"group":"radiogroup");
+  if(multi)box.appendChild(el("div","cap","Dipilih "+S.ans[i].length+" dari 3"));
+  S.order[i].forEach(function(oi,pos){
+    var sel=S.ans[i].indexOf(oi)>=0,isKey=q.key.indexOf(oi)>=0,cls="opt";
+    var mark=multi?"":String.fromCharCode(65+pos);
+    if(chk){ if(sel&&isKey){cls+=" ok";mark="✓"} else if(sel){cls+=" bad";mark="✗"} else if(isKey&&multi){cls+=" miss";mark="!"} }
+    else if(sel){cls+=" sel";mark=multi?"✓":String.fromCharCode(65+pos)}
+    if(multi&&!mark)mark="";
+    var b=el("button",cls); b.type="button"; b.disabled=chk;
+    b.setAttribute("role",multi?"checkbox":"radio"); b.setAttribute("aria-checked",sel?"true":"false");
+    b.appendChild(el("span","mk",mark)); b.appendChild(el("span",null,q.opts[oi]));
+    b.addEventListener("click",function(){
+      var a=S.ans[i];
+      if(!multi)S.ans[i]=[oi];
+      else{var k=a.indexOf(oi);if(k>=0)a.splice(k,1);else if(a.length<3)a.push(oi)}
+      render();
+    });
+    box.appendChild(b);
+  });
+  body.appendChild(box);
+}
+
+function matchUI(body,i){
+  var q=Q[i],a=S.ans[i],chk=S.chk[i];
+  function card(si,placed){
+    var c=el("button","card"+(pick===si?" pick":""),q.opts[si]); c.type="button"; c.disabled=chk; c.draggable=!chk;
+    c.addEventListener("dragstart",function(e){e.dataTransfer.setData("text/plain",String(si));pick=si});
+    c.addEventListener("click",function(ev){
+      ev.stopPropagation();
+      if(placed){a[a.indexOf(si)]=-1;pick=null}else pick=(pick===si?null:si);
+      render();
+    });
+    return c;
+  }
+  function put(slot,si){var o=a.indexOf(si);if(o>=0)a[o]=-1;a[slot]=si;pick=null;render()}
+  var pool=el("div","pool"); pool.setAttribute("aria-label","Kartu strategi");
+  var free=S.order[i].filter(function(si){return a.indexOf(si)<0});
+  free.forEach(function(si){pool.appendChild(card(si,false))});
+  if(!free.length)pool.appendChild(el("span","cap","Semua kartu sudah ditempatkan. Ketuk kartu di kotak untuk melepasnya."));
+  pool.addEventListener("dragover",function(e){e.preventDefault()});
+  pool.addEventListener("drop",function(e){e.preventDefault();var si=+e.dataTransfer.getData("text/plain");var o=a.indexOf(si);if(o>=0){a[o]=-1;render()}});
+  body.appendChild(pool);
+  var slots=el("div","slots");
+  q.stages.forEach(function(st,k){
+    var row=el("div","slotrow"); row.appendChild(el("div","stage",st));
+    var s=el("div","slot"+(pick!==null&&a[k]<0&&!chk?" ready":"")+(chk?(a[k]===k?" ok":" bad"):""));
+    s.tabIndex=chk?-1:0; s.setAttribute("role","button"); s.setAttribute("aria-label","Kotak tahap "+st);
+    if(a[k]>=0)s.appendChild(card(a[k],true)); else s.appendChild(el("span","cap","Letakkan kartu di sini"));
+    s.addEventListener("click",function(){if(!chk&&pick!==null)put(k,pick)});
+    s.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&!chk&&pick!==null&&e.target===s){e.preventDefault();put(k,pick)}});
+    s.addEventListener("dragover",function(e){e.preventDefault();s.classList.add("over")});
+    s.addEventListener("dragleave",function(){s.classList.remove("over")});
+    s.addEventListener("drop",function(e){e.preventDefault();if(!chk)put(k,+e.dataTransfer.getData("text/plain"))});
+    row.appendChild(s); slots.appendChild(row);
+    if(chk&&a[k]!==k)slots.appendChild(el("div","should","Seharusnya: "+q.opts[k]));
+  });
+  body.appendChild(slots);
+}
+
+function renderRes(body,act){
+  var sc=nOk()*20,pass=sc>=80,r=el("div","res");
+  r.appendChild(el("span","badge "+(pass?"ok":"bad"),pass?"Lulus":"Belum lulus"));
+  var big=el("div","big",String(sc)); big.appendChild(el("small"," / 100")); r.appendChild(big);
+  r.appendChild(el("p","msg",pass?PASS:FAIL));
+  var l=el("div","rlist");
+  Q.forEach(function(q,i){
+    var row=el("button","rrow "+(S.ok[i]?"ok":"bad")); row.type="button";
+    row.appendChild(el("i",null,S.ok[i]?"✓":"✗"));
+    row.appendChild(el("span",null,"Soal "+(i+1)+" · "+q.kind));
+    row.appendChild(el("b",null,S.ok[i]?"20":"0"));
+    row.addEventListener("click",function(){S.view="q";S.cur=i;S.expl[i]=true;render()});
+    l.appendChild(row);
+  });
+  r.appendChild(l); r.appendChild(el("div","cap","Ketuk satu soal untuk membuka pembahasannya."));
+  body.appendChild(r);
+  var b=resetBtn(); b.className="btn pri"; act.appendChild(b);
+}
+
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  var f=$("frame"),cols=["#2ec4b6","#13808a","#f5b942","#ffffff","#7fd6ff"];
+  for(var i=0;i<28;i++){var c=el("span","conf");c.style.left=(Math.random()*100)+"%";c.style.background=cols[i%cols.length];c.style.animationDelay=(Math.random()*.6)+"s";f.appendChild(c);(function(x){setTimeout(function(){x.remove()},3200)})(c)}
+}
+fresh(); render();
+</script>
+
+</body></html>
